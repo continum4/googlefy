@@ -120,7 +120,6 @@
   }
 
   browser.runtime.onMessage.addListener((message) => {
-    console.log(message);
     if (message.command === "googlefy") {
       var p1 = new Promise(
         function(resolve, reject) {

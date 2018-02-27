@@ -3,15 +3,14 @@ const myCSS =  `.googlefy-yellow { background-color: #FEFF99; }
                 .googlefy-float-box { z-index: 200000; position: fixed; top: 100px; right: 50px; padding: 10px; text-align: center; font-size: 16px; font-family: arial; max-width: 300px; word-wrap: break-word; }
                 .googlefy-position { background-color: black; color: white; padding: 5px; text-align: center; float: right; }
                 .googlefy-float-box_inner { }
-                .googlefy-float-box_inner .googlefy-first { background-color: #fff; border: 1px solid #000; color: #000; text-align: left; padding: 10px; }
+                .googlefy-float-box_inner .googlefy-first { background-color: #fff; border: 1px solid #F50F43; color: #000; text-align: left; padding: 10px; }
                 .googlefy-float-box_inner .googlefy-second { background-color: #F50F43; padding: 10px; }
                 .googlefy-btn { cursor: pointer; font-weight: bold; }
                 .googlefy-333 { color: #333; }
                 .googlefy-000 { color: #000; }
                 .googlefy-bluec { color: #007FFF; }
                 .googlefy-f20 { font-size: 20px; }
-                .googlefy-nts {  }
-                `;
+                .googlefy-nts {  }`;
 
 function listenForClicks() {
   document.getElementById('googlefy').addEventListener("click", (e) => {
