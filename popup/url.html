@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+  <title>Googlefy</title>
+  <style>
+    .hidden { display: none; }
+    p { padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <div id="popup-content">
+    <div class="p-2">
+      <form class="form-inline">
+        <div class="form-group mb-2">
+          <label for="url" class="sr-only">URL</label>
+          <input type="text" class="form-control" id="url" value="" autocomplete="off">
+        </div>
+        <button type="button" id="googlefy" class="btn btn-primary mb-2">Enviar</button>
+      </form>
+    </div>
+  </div>
+  <div id="error-content" class="hidden">
+    <p class="text-danger">Solo funciona en Google.</p>
+    <p>Realice una búsqueda y luego envíe la url a buscar.</p>
+  </div>
+  <script src="url.js"></script>
+</body>
+</html>

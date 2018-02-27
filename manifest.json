@@ -1,0 +1,36 @@
+{
+
+  "manifest_version": 2,
+  "name": "Googlefy",
+  "version": "1.0",
+ 
+  "description": "Plugin para Firefox que remarca resultado conforme a dominio seleccionado.",
+
+  "permissions": [
+    "activeTab"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/googlefy.png",
+    "theme_icons": [{
+        "light": "icons/googlefy.png",
+        "dark": "icons/googlefy.png",
+        "size": 32
+    }],
+    "default_title": "Googlefy",
+    "default_popup": "popup/url.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.google.com.mx/*"],
+      "js": ["content_scripts/googlefy.js"]
+    }
+  ],
+  "applications": {
+    "gecko": {
+      "id": "googlefy@continum4.com"
+    }
+  }
+
+}
