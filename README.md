@@ -6,8 +6,7 @@ Plugin para Firefox que remarca resultado conforme a dominio seleccionado.
 Instalación
 -----------
 
-+ Acceda a la configuración de Firefox, about:config y cambie el valor a false de la clave xpinstall.signatures.required.
-+ En el menú archivo seleccione abrir archivo (Crl-O), navegue hasta la carpeta build y seleccione googlefy.xpi.
++ En el menú archivo seleccione abrir archivo (Crl-O), navegue hasta la carpeta build y seleccione googlefy-1.1-an+fx.xpi.
 + Se le solicitará permiso para instalar el complemento, click en Añadir.
 
 

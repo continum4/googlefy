@@ -1,3 +1,77 @@
+(function (root, factory) {
+  'use strict';
+  if (typeof define === 'function' && define.amd) {
+    define(factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    root.Sanitizer = factory();
+  }
+}(this, function () {
+  'use strict';
+
+  var Sanitizer = {
+    _entity: /[&<>"'/]/g,
+
+    _entities: {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      '\'': '&apos;',
+      '/': '&#x2F;'
+    },
+
+    getEntity: function (s) {
+      return Sanitizer._entities[s];
+    },
+
+    /**
+     * Escapes HTML for all values in a tagged template string.
+     */
+    escapeHTML: function (strings, ...values) {
+      var result = '';
+
+      for (var i = 0; i < strings.length; i++) {
+        result += strings[i];
+        if (i < values.length) {
+          result += String(values[i]).replace(Sanitizer._entity,
+            Sanitizer.getEntity);
+        }
+      }
+
+      return result;
+    },
+    /**
+     * Escapes HTML and returns a wrapped object to be used during DOM insertion
+     */
+    createSafeHTML: function (strings, ...values) {
+      var escaped = Sanitizer.escapeHTML(strings, ...values);
+      return {
+        __html: escaped,
+        toString: function () {
+          return '[object WrappedHTMLObject]';
+        },
+        info: 'This is a wrapped HTML object. See https://developer.mozilla.or'+
+          'g/en-US/Firefox_OS/Security/Security_Automation for more.'
+      };
+    },
+    /**
+     * Unwrap safe HTML created by createSafeHTML or a custom replacement that
+     * underwent security review.
+     */
+    unwrapSafeHTML: function (...htmlObjects) {
+      var markupList = htmlObjects.map(function(obj) {
+        return obj.__html;
+      });
+      return markupList.join('');
+    }
+  };
+
+  return Sanitizer;
+
+}));
+
 (function() {
   if (window.hasRun) {
     return;
@@ -32,45 +106,46 @@
       var div = document.createElement("div");
       div.id = 'googlefy-float-box';
       div.classList = 'googlefy-float-box';
-      div.innerHTML = 
-        `<div class="googlefy-float-box_inner">
+      var template = Sanitizer.createSafeHTML`<div class="googlefy-float-box_inner">
           <div class="googlefy-first">
             <b class="googlefy-333">N° coincidencias: <span class="googlefy-000 googlefy-f20">${positions.length}</span></b><br>
             <b class="googlefy-333">Posicion(es) de los resultados: <span class="googlefy-bluec googlefy-f20">${npos.join(',')}</span></b>
           </div>
           <div class="googlefy-second">
-            <button class="googlefy-btn" id="__prev" type="button"> << </button>
-            <button class="googlefy-btn" id="__next" type="button"> >> </button>
+            <button class="googlefy-btn" id="__prev" type="button"> << Ant </button>
+            <button class="googlefy-btn" id="__next" type="button"> Sig >> </button>
           </div>
         </div>`;
+      div.innerHTML = Sanitizer.unwrapSafeHTML(template);
       home.prepend(div);
+      
       scrollIntoView(positions[0].id);
-      document.getElementById('inner_'+positions[0].id).classList = 'googlefy-orange';
+      document.getElementById(positions[0].id).classList.replace('googlefy-yellow', 'googlefy-orange');      
 
       var prev = document.getElementById('__prev');
       var next = document.getElementById('__next');
-
       var i = 0;
       prev.addEventListener('click', function() {
-        document.getElementById('inner_'+positions[i].id).classList = 'googlefy-yellow';
+        document.getElementById(positions[i].id).classList.replace('googlefy-orange', 'googlefy-yellow')
         i--;
         if (i == -1) i = positions.length - 1;
         scrollIntoView(positions[i].id);
-        document.getElementById('inner_'+positions[i].id).classList = 'googlefy-orange';
+        document.getElementById(positions[i].id).classList.replace('googlefy-yellow', 'googlefy-orange')
       });
 
       next.addEventListener('click', function() {
-        document.getElementById('inner_'+positions[i].id).classList = 'googlefy-yellow';
+        document.getElementById(positions[i].id).classList.replace('googlefy-orange', 'googlefy-yellow')
         i++;
         if (i == positions.length) i = 0;
         scrollIntoView(positions[i].id);
-        document.getElementById('inner_'+positions[i].id).classList = 'googlefy-orange';
+        document.getElementById(positions[i].id).classList.replace('googlefy-yellow', 'googlefy-orange')
       });
     } else {
       var home = document.getElementById('gsr');
       var div = document.createElement("div");
+      div.id = 'googlefy-float-box';
       div.classList = 'googlefy-float-box';
-      div.innerHTML = `<div class="googlefy-nts">No se han hallado coincidencias.</div>`;
+      div.innerHTML = Sanitizer.escapeHTML`<div class="googlefy-nts">No se han hallado coincidencias.</div>`;
       home.prepend(div);
     }
   }
@@ -84,12 +159,17 @@
       Array.from(h3).forEach(function(element, index) {
         if (element.innerHTML.indexOf(url) != -1) {
           element.id = 'locate_'+Math.random();
-          element.classList = 'g googlefy-result';
-          var inn = element.innerHTML;
+          element.classList = 'g googlefy-result googlefy-yellow';
           var start =(getQueryVariable('start') !== false)?parseFloat(getQueryVariable('start')):0;
           var position = start + index + 1;
-          var nn = '<b class="googlefy-position" id="b_inner_'+element.id+'">'+position+'</b><div id="inner_'+element.id+'" class="googlefy-yellow">'+inn+'</div>';
-          element.innerHTML = nn;
+          
+          var inn = Sanitizer.createSafeHTML(element.innerHTML);
+          element.innerHTML = Sanitizer.unwrapSafeHTML(inn);
+          let b = document.createElement("b");
+          b.id = `b_inner_${element.id}`;
+          b.classList = 'googlefy-position';
+          b.innerHTML = Sanitizer.escapeHTML`${position}`;
+          element.prepend(b);
           positions.push({id: element.id, position: position});
         }
       });      
@@ -109,11 +189,8 @@
     if (h3.length) {
       Array.from(h3).forEach(function(element, index) {
         let b = document.getElementById('b_inner_'+element.id);
-        let d = document.getElementById('inner_'+element.id);
-        element.id = '';
-        let content = d.innerHTML;
         b.parentNode.removeChild(b);
-        d.parentNode.innerHTML = content;
+        element.id = '';
         element.classList = 'g';
       });
     }
